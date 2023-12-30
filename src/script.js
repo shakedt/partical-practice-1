@@ -30,11 +30,17 @@ const colors = new Float32Array(count * 3)
 
 for ( let i = 0; i < positions.length; i++) {
     positions[i] = (Math.random() - 0.5) * 10
+    colors[i] = Math.random();
 }
 
 particlesGeometry.setAttribute(
     'position',
     new THREE.BufferAttribute(positions, 3)
+)
+
+particlesGeometry.setAttribute(
+    'color',
+    new THREE.BufferAttribute(colors, 3)
 )
 
 
@@ -43,9 +49,10 @@ particlesGeometry.setAttribute(
     size: 0.1,
     sizeAttenuation: true,
     blending: THREE.AdditiveBlending,
-    color: new THREE.Color('#ff88cc'),
+    // color: new THREE.Color('#ff88cc'),
     alphaMap: particleTexture,
     transparent: true,
+    vertexColors: true,
     // alphaTest: 0.001,
     // depthTest: true
     // depthTest:false,
@@ -111,9 +118,15 @@ const tick = () =>
 {
     const elapsedTime = clock.getElapsedTime()
 
-    // particales.position.x = elapsedTime
-    // particales.position.y = elapsedTime
-    // particales.position.z = elapsedTime
+    //  Update particles
+    for (let i = 0; i < count; i++) {
+        const i3 = i * 3;
+        const x = particlesGeometry.attributes.position.array[i3]
+        particales.geometry.attributes.position.array[i3 + 1] = Math.sin(elapsedTime + x) 
+    }
+
+    particales.geometry.attributes.position.needsUpdate = true;
+
     // Update controls
     controls.update()
 
@@ -121,4 +134,7 @@ const tick = () =>
     renderer.render(scene, camera)
 
     // Call tick again on the next frame
-    w
+    window.requestAnimationFrame(tick)
+}
+
+tick()
